@@ -1,0 +1,12 @@
+{application,ums,
+    [{description,"Ubiquiti Messaging Service"},
+     {vsn,"0.0.1"},
+     {modules,[]},
+     {registered,[]},
+     {applications,
+         [cowboy,crypto,
+          jsx,kernel,lager,
+          ranch,ssl,
+          stdlib,mnesia]},
+     {mod,{ums_app,[]}},
+     {env, []}]}.
