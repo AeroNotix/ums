@@ -34,3 +34,4 @@ _build
 .vagrant/
 *.zip
 utils/webrtc_debug_logs/webrtc_debug_logs
+.venv
