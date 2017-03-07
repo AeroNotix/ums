@@ -24,7 +24,7 @@
   0},
  {<<"lager">>,
   {git,"https://github.com/basho/lager.git",
-       {ref,"b6b6cebcb27ccff8acc59ae775acebc2f52e4926"}},
+       {ref,"81eaef0ce98fdbf64ab95665e3bc2ec4b24c7dac"}},
   0},
  {<<"jsx">>,
   {git,"https://github.com/talentdeficit/jsx.git",
