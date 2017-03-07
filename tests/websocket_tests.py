@@ -52,15 +52,6 @@ class UMSWebsocketClientTests(unittest.TestCase):
     def test_websocket_can_unsubscribe_resources(self):
         self.simple_operation("unsubscribe")
 
-    def test_websocket_can_sync_resources(self):
-        self.simple_operation(
-            "sync",
-            extend={"resources":[
-                "00000-00000-00000-00000-00000",
-                "00000-00000-00000-00000-00001"
-            ]}
-        )
-
     def test_websocket_reconnect_with_session_id(self):
         ws = websocket.WebSocket()
         ws.connect(UMS_WS_ENDPOINT)

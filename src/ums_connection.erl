@@ -43,11 +43,7 @@ websocket_handle_op(<<"subscribe">>=Op, #{<<"resource">> := Resource, <<"edge">>
     websocket_reply_status(ok, Op, S, R0, Edge, Resource);
 websocket_handle_op(<<"unsubscribe">>=Op, #{<<"resource">> := Resource, <<"edge">> := Edge}, R0, #s_v1{session_id=Sid}=S) ->
     ok = ums_state:unsubscribe_edge(Sid, Edge, Resource),
-    websocket_reply_status(ok, Op, S, R0, Edge, Resource);
-websocket_handle_op(<<"sync">>, #{<<"resources">> := Resources, <<"edge">> := Edge}, R0, #s_v1{session_id=_Sid}=S)
-  when is_list(Resources) ->
-    ok = ums_state:sync(Edge, Resources),
-    {reply, {binary, status(ok)}, R0, S}.
+    websocket_reply_status(ok, Op, S, R0, Edge, Resource).
 
 websocket_info(inform_client_of_known_subscriptions, R0, #s_v1{session_id=Sid}=State) ->
     {ok, Subscriptions} = ums_state:subscriptions_for_session_id(Sid),
