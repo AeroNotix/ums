@@ -13,7 +13,6 @@
 -export([sync/2]).
 -export([install_ets/0]).
 
-
 -include_lib("stdlib/include/ms_transform.hrl").
 
 -record(umss_v1, {
@@ -21,6 +20,7 @@
           resource = error(must_supply_resource) :: string(),
           edge_server = error(must_supply_name) :: binary()
          }).
+
 
 edges_subscribed(Resource)
   when is_binary(Resource) ->
