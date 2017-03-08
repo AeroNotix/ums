@@ -12,10 +12,19 @@
 -export([acceptor_count/0]).
 -export([listener_name/0]).
 -export([start_listener/0]).
+-export([read_json_body/1]).
 
 
 routes() ->
-    [{<<"/subscribe">>, ums_connection, []}].
+    DebugEndpoint =
+        case application:get_env(ums, debug_endpoint, false) of
+            true ->
+                [{<<"/debug">>, ums_rest_debug, []}];
+            false ->
+                []
+        end,
+    [{<<"/route">>, ums_rest_route, []},
+     {<<"/subscribe">>, ums_connection, []}|DebugEndpoint].
 
 middlewares() ->
     [cowboy_router,
@@ -54,3 +63,23 @@ start_listener() ->
                 protoopts()
                ),
     ok.
+
+read_body(Req) ->
+    read_body(Req, <<>>).
+
+read_body(Req0, Buf) ->
+    case cowboy_req:body(Req0) of
+        {ok, Data, Req1} ->
+            Body = <<Buf/binary, Data/binary>>,
+            {ok, Body, Req1};
+        {more, Data, Req1} ->
+            Body = <<Buf/binary, Data/binary>>,
+            read_body(Req1, Body);
+        {error, _} = E ->
+            E
+    end.
+
+read_json_body(Req0) ->
+    {ok, JBody, Req1} = read_body(Req0),
+    Body = jsx:decode(JBody, [return_maps]),
+    {ok, Body, Req1}.

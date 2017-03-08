@@ -23,7 +23,7 @@ class UMSWebsocketClientTests(unittest.TestCase):
         payload = {
             "op": operation,
             "resource": "00000-00000-00000-00000-00000",
-            "edge": "http://localhost"
+            "edge": "http://localhost:5564/debug"
         }
         payload.update(extend)
         payload = json.dumps(payload)
@@ -64,7 +64,7 @@ class UMSWebsocketClientTests(unittest.TestCase):
         expected_reply = {
             "subscriptions": [{
                 "resource": "00000-00000-00000-00000-00000",
-                "edge": "http://localhost"
+                "edge": "http://localhost:5564/debug"
             }]
         }
         self.assertEquals(
@@ -76,7 +76,7 @@ class UMSWebsocketClientTests(unittest.TestCase):
         with websocket_connection() as ws:
             self.simple_operation("subscribe", ws=ws)
             body = {
-                "resource": "00000-00000-00000-00000-00000",
+                "resources": ["00000-00000-00000-00000-00000"],
                 "message": {
                     "random": "data",
                     "goes": "here"
@@ -84,4 +84,3 @@ class UMSWebsocketClientTests(unittest.TestCase):
             }
             resp = requests.post("http://localhost:5564/route", json=body)
             self.assertEquals(resp.status_code, 200)
-            time.sleep(60)
