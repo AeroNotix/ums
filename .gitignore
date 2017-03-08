@@ -4,7 +4,6 @@ deps
 log
 logs
 etc
-sys.config
 test.config
 /tests/**/nosetests.xml
 *.beam
