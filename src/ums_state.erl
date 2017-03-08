@@ -1,17 +1,16 @@
 -module(ums_state).
 
 -export([edges_subscribed/1]).
--export([subscribe_edge/3]).
--export([unsubscribe_edge/3]).
+-export([find_session_cleanup/1]).
+-export([install_ets/0]).
 -export([install_mnesia/1]).
+-export([notify_session_reestablished/1]).
+-export([remove_session_cleanup/1]).
 -export([schedule_resource_cleanup/1]).
 -export([store_session_cleanup/2]).
--export([remove_session_cleanup/1]).
--export([find_session_cleanup/1]).
--export([notify_session_reestablished/1]).
+-export([subscribe_edge/3]).
 -export([subscriptions_for_session_id/1]).
--export([sync/2]).
--export([install_ets/0]).
+-export([unsubscribe_edge/3]).
 
 -include_lib("stdlib/include/ms_transform.hrl").
 
