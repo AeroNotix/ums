@@ -37,4 +37,5 @@ subscribe_edge_and_lookup(_Config) ->
     Edge = <<"http://localhost">>,
     Resource = <<"00000-00000-00000-00000-00000">>,
     ok = ums_state:subscribe_edge(Sid, Edge, Resource),
+    ok = ums_state:subscribe_edge(Sid, Edge, Resource),
     {ok, [Edge]} = ums_state:edges_subscribed([Resource]).
