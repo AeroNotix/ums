@@ -34,3 +34,10 @@ _build
 .vagrant/
 *.zip
 .venv
+ct_run.*/**
+all_runs.html
+*.css
+ct_log_cache
+index.html
+jquery*
+variables*
