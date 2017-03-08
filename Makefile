@@ -14,7 +14,7 @@ compile:
 	$(REBAR) compile
 
 console:
-	@$(REBAR) shell --sname $(PROJECT_NAME)_console --config sys.config
+	@$(REBAR) shell --sname ums_console --config file/sys.config
 
 ${PIP}:
 	virtualenv -p "$$(which python3)" .venv
