@@ -28,7 +28,13 @@ edges_subscribed(Resources)
     F = fun() ->
                 mnesia:select(ums_state, [{MatchHead, MatchGuards, [Result]}])
         end,
-    mnesia:transaction(F).
+    case mnesia:transaction(F) of
+        [] ->
+            {error, unknown_resource};
+        {atomic, Edges} when is_list(Edges) ->
+            {ok, Edges}
+    end.
+
 
 subscriptions_for_session_id(SessionId) ->
     MS = ets:fun2ms(
