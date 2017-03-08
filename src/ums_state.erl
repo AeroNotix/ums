@@ -61,9 +61,6 @@ unsubscribe_edge(SessionId, Edge, Resource) ->
     Subscription = #umss_v1{session_id=SessionId, resource=Resource, edge_server=Edge},
     mnesia:dirty_delete_object(ums_state, Subscription).
 
-sync(_Edge, _Resources) ->
-    ok.
-
 schedule_resource_cleanup(Sid) ->
     lager:debug("Scheduling cleanup for: ~p", [Sid]),
     spawn(fun() ->
