@@ -4,7 +4,8 @@
 
 
 send(Resources, Message) ->
-    JSONMessage = jsx:encode(Message),
+    lager:debug("Sending message to ~p with ~p", [Resources, Message]),
+    JSONMessage = jsx:encode(maps:without(<<"resources">>, Message)),
     case ums_state:edges_subscribed(Resources) of
         {ok, Edges}
           when is_list(Edges) ->

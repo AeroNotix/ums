@@ -87,3 +87,12 @@ class UMSWebsocketClientTests(unittest.TestCase):
             }
             resp = requests.post(UMS_DEBUG_ENDPOINT, json=body)
             self.assertEquals(resp.status_code, 200)
+            msg = ws.recv()
+            self.assertEquals(
+                json.loads(msg),
+                {
+                    "message": {
+                        "random": "data",
+                        "goes": "here"
+                    }
+                })

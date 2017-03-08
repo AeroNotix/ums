@@ -48,7 +48,10 @@ websocket_handle_op(<<"unsubscribe">>=Op, #{<<"resource">> := Resource, <<"edge"
 websocket_info(inform_client_of_known_subscriptions, R0, #s_v1{session_id=Sid}=State) ->
     {ok, Subscriptions} = ums_state:subscriptions_for_session_id(Sid),
     lager:debug("Informing client of known sessions: ~p", [{Sid, Subscriptions}]),
-    {reply, {binary, subscriptions_to_json(Subscriptions)}, R0, State}.
+    {reply, {binary, subscriptions_to_json(Subscriptions)}, R0, State};
+websocket_info({debug_message, JSON}, R0, State) ->
+    {reply, {binary, jsx:encode(JSON)}, R0, State}.
+
 
 websocket_terminate(_Reason, _R0, #s_v1{session_id=Sid}) ->
     ums_state:schedule_resource_cleanup(Sid).
