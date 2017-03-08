@@ -1,4 +1,3 @@
-import time
 import requests
 import json
 from contextlib import contextmanager
@@ -6,7 +5,11 @@ import websocket
 import unittest
 
 
+RESOURCE = "00000-00000-00000-00000-00000"
+UMS_DEBUG_ENDPOINT = "http://localhost:5564/debug"
+UMS_SESSION_ID_HEADER = 'x-ums-session-id'
 UMS_WS_ENDPOINT = "ws://localhost:5564/subscribe"
+
 
 @contextmanager
 def websocket_connection(connect_to=UMS_WS_ENDPOINT, ws_should_stay_open=True):
@@ -22,8 +25,8 @@ class UMSWebsocketClientTests(unittest.TestCase):
     def _simple_operation(self, ws, operation, extend={}):
         payload = {
             "op": operation,
-            "resource": "00000-00000-00000-00000-00000",
-            "edge": "http://localhost:5564/debug"
+            "resource": RESOURCE,
+            "edge": UMS_DEBUG_ENDPOINT
         }
         payload.update(extend)
         payload = json.dumps(payload)
@@ -46,7 +49,7 @@ class UMSWebsocketClientTests(unittest.TestCase):
 
     def test_websocket_has_session_header(self):
         with websocket_connection() as ws:
-            self.assertIsNotNone(ws.headers.get('x-ums-session-id'))
+            self.assertIsNotNone(ws.headers.get(UMS_SESSION_ID_HEADER))
 
     def test_websocket_can_subscribe_resources(self):
         self.simple_operation("subscribe")
@@ -57,14 +60,14 @@ class UMSWebsocketClientTests(unittest.TestCase):
     def test_websocket_reconnect_with_session_id(self):
         ws = websocket.WebSocket()
         ws.connect(UMS_WS_ENDPOINT)
-        session_id = ws.headers['x-ums-session-id']
+        session_id = ws.headers[UMS_SESSION_ID_HEADER]
         self.simple_operation("subscribe", ws=ws)
         ws.close()
         ws.connect(UMS_WS_ENDPOINT, header={"x-ums-session-id": session_id})
         expected_reply = {
             "subscriptions": [{
-                "resource": "00000-00000-00000-00000-00000",
-                "edge": "http://localhost:5564/debug"
+                "resource": RESOURCE,
+                "edge": UMS_DEBUG_ENDPOINT
             }]
         }
         self.assertEquals(
@@ -76,11 +79,11 @@ class UMSWebsocketClientTests(unittest.TestCase):
         with websocket_connection() as ws:
             self.simple_operation("subscribe", ws=ws)
             body = {
-                "resources": ["00000-00000-00000-00000-00000"],
+                "resources": [RESOURCE],
                 "message": {
                     "random": "data",
                     "goes": "here"
                 }
             }
-            resp = requests.post("http://localhost:5564/route", json=body)
+            resp = requests.post(UMS_DEBUG_ENDPOINT, json=body)
             self.assertEquals(resp.status_code, 200)
