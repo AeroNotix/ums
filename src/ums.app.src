@@ -1,5 +1,5 @@
 {application,ums,
-    [{description,"Ubiquiti Messaging Service"},
+    [{description,"Universal Messaging Service"},
      {vsn,"0.0.1"},
      {modules,[]},
      {registered,[]},
