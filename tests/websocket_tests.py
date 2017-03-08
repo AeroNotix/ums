@@ -1,3 +1,5 @@
+import time
+import requests
 import json
 from contextlib import contextmanager
 import websocket
@@ -69,3 +71,17 @@ class UMSWebsocketClientTests(unittest.TestCase):
             json.loads(ws.recv()),
             expected_reply
         )
+
+    def test_can_route_message(self):
+        with websocket_connection() as ws:
+            self.simple_operation("subscribe", ws=ws)
+            body = {
+                "resource": "00000-00000-00000-00000-00000",
+                "message": {
+                    "random": "data",
+                    "goes": "here"
+                }
+            }
+            resp = requests.post("http://localhost:5564/route", json=body)
+            self.assertEquals(resp.status_code, 200)
+            time.sleep(60)
