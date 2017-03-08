@@ -53,6 +53,7 @@ subscribe_edge(SessionId, Edge, Resources)
     [ok = subscribe_edge(SessionId, Edge, Resource) || Resource <- Resources],
     ok;
 subscribe_edge(SessionId, Edge, Resource) ->
+    lager:debug("Subscribing edge in session: ~p", [{SessionId, Edge, Resource}]),
     Subscription = #umss_v1{session_id=SessionId, resource=Resource, edge_server=Edge},
     mnesia:dirty_write(ums_state, Subscription).
 
