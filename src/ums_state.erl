@@ -20,10 +20,6 @@
           edge_server = error(must_supply_name) :: binary()
          }).
 
-
-edges_subscribed(Resource)
-  when is_binary(Resource) ->
-    mnesia:dirty_read(ums_state, [Resource]);
 edges_subscribed(Resources)
   when is_list(Resources) ->
     MatchHead = #umss_v1{session_id='_', resource='$1', edge_server = '$2'},
