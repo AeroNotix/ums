@@ -13,7 +13,7 @@ deps:
 compile:
 	$(REBAR) compile
 
-console:
+edts-console:
 	@$(REBAR) shell --sname ums_console --config file/sys.config
 
 ${PIP}:
