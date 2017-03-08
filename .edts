@@ -1,3 +1,3 @@
 :name "ums_console"
-:lib-dirs '("apps" "deps" "_build/default/lib")
+:lib-dirs '("_build/default/lib")
 :start-command "make console"
