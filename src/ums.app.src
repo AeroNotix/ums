@@ -7,6 +7,6 @@
          [cowboy,crypto,
           jsx,kernel,lager,
           ranch,ssl,
-          stdlib,mnesia,uuid]},
+          stdlib,mnesia,uuid,inets]},
      {mod,{ums_app,[]}},
      {env, []}]}.
