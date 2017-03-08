@@ -19,7 +19,7 @@ start_link() ->
     gen_server:start_link(?MODULE, [], []).
 
 init([]) ->
-    Interval = application:get_env(ubic_airos, world_interval, 1000 * 60 * 20),
+    Interval = application:get_env(ums, world_interval, 1000 * 60 * 20),
     self() ! world,
     {ok, #state{ interval = Interval }}.
 
