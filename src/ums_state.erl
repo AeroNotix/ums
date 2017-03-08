@@ -22,7 +22,7 @@
 
 edges_subscribed(Resources)
   when is_list(Resources) ->
-    MatchHead = #umss_v1{session_id='_', resource='$1', edge_server = '$2'},
+    MatchHead = #umss_v1{session_id='_', resource='$1', edge_server='$2'},
     MatchGuards = [{'==', '$1', Resource} || Resource <- Resources],
     Result = '$2',
     F = fun() ->
