@@ -25,7 +25,12 @@ python-deps: ${PIP}
 release:
 	$(REBAR) release
 
-test:
+run:
+	./_build/default/rel/ums/bin/ums console
+
+test: python-tests ct
+
+python-tests:
 	${NOSE} tests
 
 $(BUMPERL):
