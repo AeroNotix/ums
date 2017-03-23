@@ -128,7 +128,7 @@ install_mnesia() ->
     case ExpectedNodes == Nodes of
         true ->
             global:trans({mnesia_create_lock, node()},
-                         fun() -> lager:error("~p got lock", [node()]), install_mnesia(Nodes) end,
+                         fun() -> lager:error("~p got lock", [node()]), install_mnesia([node() | Nodes]) end,
                          Nodes);
         false ->
             lager:error("Waiting for cluster to be fully formed before becoming operational"),
