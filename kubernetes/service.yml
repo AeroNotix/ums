@@ -13,3 +13,17 @@ spec:
     protocol: TCP
   selector:
     app: ums
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: ums-external
+spec:
+  selector:
+    app: ums
+  ports:
+  - protocol: TCP
+    port: 5564
+    targetPort: 5564
+    name: websocket
+  type: LoadBalancer
