@@ -127,6 +127,7 @@ install_mnesia() ->
     Nodes = lists:usort(nodes()),
     case ExpectedNodes == Nodes of
         true ->
+            lager:error("Attempting to lock"),
             global:trans({mnesia_create_lock, node()},
                          fun() -> lager:error("~p got lock", [node()]), install_mnesia([node() | Nodes]) end,
                          Nodes);
@@ -137,8 +138,10 @@ install_mnesia() ->
     end.
 
 install_mnesia(Nodes) ->
-    lager:error("Error while creating schema: ~p", [mnesia:create_schema(Nodes)]),
+    lager:error("Creating schema: ~p", [mnesia:create_schema(Nodes)]),
     rpc:multicall(Nodes, application, start, [mnesia]),
+    %% debug locks
+    timer:sleep(10000),
     ok = create_table(ums_state,
                       [{attributes, record_info(fields, umss_v1)},
                        {record_name, umss_v1},
