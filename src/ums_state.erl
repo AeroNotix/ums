@@ -199,12 +199,18 @@ check_remote_tables_exist(Nodes) ->
     lists:any(fun(X) -> X end, Replies).
 
 table_exists() ->
-    lists:member(ums_state, mnesia:system_info(tables)).
+    Node = node(),
+    try
+        lists:member(ums_state, mnesia:system_info(tables))
+    catch
+        exit:{aborted, {node_not_running, Node}} ->
+            false
+    end.
 
 add_node_to_mnesia_cluster(Node) ->
     {ok, _} = mnesia:change_config(extra_db_nodes, [Node]),
     ok.
 
 ask_remote_nodes_to_change_config(Nodes, ForWhom) ->
-    {Replies, _} = rpc:multicall(Nodes, ums_state, add_node_to_mnesia_cluster, [ForWhom]),
+    {Replies, _} = rpc:multicall(Nodes -- [node()], ums_state, add_node_to_mnesia_cluster, [ForWhom]),
     lists:all(fun(X) -> ok == X end, Replies).
