@@ -122,17 +122,63 @@ remove_subscriptions_by_session_id(SessionId) ->
     mnesia:transaction(RemoveBySessionId).
 
 install_mnesia(Nodes) ->
+    ExpectedNodes = lists:usort(werld:expected_nodes()),
+    Nodes = lists:usort(nodes()),
+    case ExpectedNodes == Nodes of
+        true ->
+            do_install_mnesia(Nodes);
+        false ->
+            lager:error("Waiting for cluster to be fully formed before becoming operational"),
+            timer:sleep(10000),
+            install_mnesia(Nodes)
+    end.
+
+do_install_mnesia(Nodes) ->
     rpc:multicall(Nodes, application, start, [mnesia]),
     mnesia:create_schema(Nodes),
-    case mnesia:create_table(ums_state,
-                             [{attributes, record_info(fields, umss_v1)},
-                              {record_name, umss_v1},
-                              {ram_copies, Nodes},
-                              {type, bag}]) of
+
+    ok = create_table(ums_state,
+                    [{attributes, record_info(fields, umss_v1)},
+                     {record_name, umss_v1},
+                     {ram_copies, Nodes},
+                     {type, bag}]).
+
+%% Stolen from https://github.com/ostinelli/syn/blob/master/src/syn_backbone.erl
+create_table(TableName, Options) ->
+    CurrentNode = node(),
+    %% ensure table exists
+    case mnesia:create_table(TableName, Options) of
         {atomic, ok} ->
+            error_logger:info_msg("~p was successfully created", [TableName]),
             ok;
-        {aborted, {already_exists, ums_state}} ->
-            ok
-    end,
-    mnesia:change_config(extra_db_nodes, Nodes),
-    ok.
+        {aborted, {already_exists, TableName}} ->
+            %% table already exists, try to add current node as copy
+            add_table_copy_to_current_node(TableName);
+        {aborted, {already_exists, TableName, CurrentNode}} ->
+            %% table already exists, try to add current node as copy
+            add_table_copy_to_current_node(TableName);
+        Other ->
+            error_logger:error_msg("Error while creating ~p: ~p", [TableName, Other]),
+            {error, Other}
+    end.
+
+
+add_table_copy_to_current_node(TableName) ->
+    CurrentNode = node(),
+    %% wait for table
+    mnesia:wait_for_tables([TableName], 10000),
+    %% add copy
+    case mnesia:add_table_copy(TableName, CurrentNode, ram_copies) of
+        {atomic, ok} ->
+            error_logger:info_msg("Copy of ~p was successfully added to current node", [TableName]),
+            ok;
+        {aborted, {already_exists, TableName}} ->
+            error_logger:info_msg("Copy of ~p is already added to current node", [TableName]),
+            ok;
+        {aborted, {already_exists, TableName, CurrentNode}} ->
+            error_logger:info_msg("Copy of ~p is already added to current node", [TableName]),
+            ok;
+        {aborted, Reason} ->
+            error_logger:error_msg("Error while creating copy of ~p: ~p", [TableName, Reason]),
+            {error, Reason}
+    end.
