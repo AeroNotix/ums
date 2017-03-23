@@ -128,7 +128,7 @@ install_mnesia() ->
     case ExpectedNodes == Nodes of
         true ->
             global:trans({mnesia_create_lock, node()},
-                         fun() -> do_install_mnesia(Nodes) end,
+                         fun() -> lager:error("~p got lock", [node()]), do_install_mnesia(Nodes) end,
                          Nodes,
                          infinity);
         false ->
