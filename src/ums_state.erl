@@ -11,6 +11,7 @@
 -export([subscribe_edge/3]).
 -export([subscriptions_for_session_id/1]).
 -export([unsubscribe_edge/3]).
+-export([do_install_mnesia/1]).
 
 -include_lib("stdlib/include/ms_transform.hrl").
 
@@ -152,7 +153,7 @@ create_table(TableName, Options) ->
     %% ensure table exists
     case mnesia:create_table(TableName, Options) of
         {atomic, ok} ->
-            error_logger:info_msg("~p was successfully created", [TableName]),
+            lager:error("~p was successfully created", [TableName]),
             ok;
         {aborted, {already_exists, TableName}} ->
             %% table already exists, try to add current node as copy
@@ -173,15 +174,15 @@ add_table_copy_to_current_node(TableName) ->
     %% add copy
     case mnesia:add_table_copy(TableName, CurrentNode, ram_copies) of
         {atomic, ok} ->
-            error_logger:info_msg("Copy of ~p was successfully added to current node", [TableName]),
+            lager:error("Copy of ~p was successfully added to current node", [TableName]),
             ok;
         {aborted, {already_exists, TableName}} ->
-            error_logger:info_msg("Copy of ~p is already added to current node", [TableName]),
+            lager:error("Copy of ~p is already added to current node", [TableName]),
             ok;
         {aborted, {already_exists, TableName, CurrentNode}} ->
-            error_logger:info_msg("Copy of ~p is already added to current node", [TableName]),
+            lager:error("Copy of ~p is already added to current node", [TableName]),
             ok;
         {aborted, Reason} ->
-            error_logger:error_msg("Error while creating copy of ~p: ~p", [TableName, Reason]),
+            lager:error("Error while creating copy of ~p: ~p", [TableName, Reason]),
             {error, Reason}
     end.
