@@ -16,7 +16,9 @@ start_cowboy() ->
 
 start_mnesia() ->
     ok = ums_state:install_mnesia(),
-    mnesia:wait_for_tables([ums_state], infinity).
+    ok = mnesia:wait_for_tables([ums_state], infinity),
+    lager:error("Mnesia started").
+
 
 stop(_State) ->
     ok.
