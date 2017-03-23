@@ -138,9 +138,8 @@ install_mnesia() ->
     end.
 
 do_install_mnesia(Nodes) ->
-    rpc:multicall(Nodes, application, start, [mnesia]),
     mnesia:create_schema(Nodes),
-
+    rpc:multicall(Nodes, application, start, [mnesia]),
     ok = create_table(ums_state,
                       [{attributes, record_info(fields, umss_v1)},
                        {record_name, umss_v1},
