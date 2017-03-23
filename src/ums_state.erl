@@ -12,6 +12,9 @@
 -export([subscribe_edge/3]).
 -export([subscriptions_for_session_id/1]).
 -export([unsubscribe_edge/3]).
+-export([table_exists/0]).
+-export([add_node_to_mnesia_cluster/1]).
+
 
 -include_lib("stdlib/include/ms_transform.hrl").
 
@@ -139,12 +142,17 @@ install_mnesia() ->
 
 install_mnesia(Nodes) ->
     lager:error("Creating schema: ~p", [mnesia:create_schema(Nodes)]),
-    rpc:multicall(Nodes, application, start, [mnesia]),
-    ok = create_table(ums_state,
-                      [{attributes, record_info(fields, umss_v1)},
-                       {record_name, umss_v1},
-                       {ram_copies, Nodes},
-                       {type, bag}]).
+    case check_remote_tables_exist(Nodes) of
+        true ->
+            ok = ask_remote_nodes_to_change_config(Nodes, node());
+        false ->
+            rpc:multicall(Nodes, application, start, [mnesia]),
+            ok = create_table(ums_state,
+                              [{attributes, record_info(fields, umss_v1)},
+                               {record_name, umss_v1},
+                               {ram_copies, Nodes},
+                               {type, bag}])
+    end.
 
 %% Stolen from https://github.com/ostinelli/syn/blob/master/src/syn_backbone.erl
 create_table(TableName, Options) ->
@@ -185,3 +193,18 @@ add_table_copy_to_current_node(TableName) ->
             lager:error("Error while creating copy of ~p: ~p", [TableName, Reason]),
             {error, Reason}
     end.
+
+check_remote_tables_exist(Nodes) ->
+    {Replies, _} = rpc:multicall(Nodes, ums_state, table_exists, []),
+    lists:any(fun(X) -> X end, Replies).
+
+table_exists() ->
+    lists:member(ums_state, mnesia:system_info(tables)).
+
+add_node_to_mnesia_cluster(Node) ->
+    {ok, _} = mnesia:change_config(extra_db_nodes, [Node]),
+    ok.
+
+ask_remote_nodes_to_change_config(Nodes, ForWhom) ->
+    {Replies, _} = rpc:multicall(Nodes, ums_state, add_node_to_mnesia_cluster, [ForWhom]),
+    lists:all(fun(X) -> ok == X end, Replies).
