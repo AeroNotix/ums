@@ -137,7 +137,7 @@ install_mnesia() ->
     end.
 
 install_mnesia(Nodes) ->
-    mnesia:create_schema(Nodes),
+    lager:error("~p", [mnesia:create_schema(Nodes)]),
     rpc:multicall(Nodes, application, start, [mnesia]),
     ok = create_table(ums_state,
                       [{attributes, record_info(fields, umss_v1)},
