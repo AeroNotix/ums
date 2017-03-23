@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: ums
+  labels:
+    run: ums
+spec:
+  clusterIP: None
+  type: ClusterIP
+  ports:
+  - port: 5564
+    name: websocket
+    protocol: TCP
+  selector:
+    app: ums
