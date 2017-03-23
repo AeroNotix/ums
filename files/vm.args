@@ -1,5 +1,5 @@
 ## Name of the node
--name ums@$NODE
+-name ums@${NODE}
 
 ## Cookie for distributed erlang
 -setcookie ums
