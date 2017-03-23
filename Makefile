@@ -12,6 +12,9 @@ DOCKER_IMAGE_TAG=$(shell git rev-parse --short HEAD)
 export
 
 
+docker-build-dependencies:
+	@docker build -t ums-dependencies -f Dockerfile.dependencies .
+
 docker-build:
 	@docker build \
 			--squash \

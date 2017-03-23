@@ -1,4 +1,4 @@
-FROM erlang:18
+FROM ums-dependencies
 
 COPY . /usr/app
 
