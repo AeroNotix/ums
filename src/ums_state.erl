@@ -4,6 +4,7 @@
 -export([find_session_cleanup/1]).
 -export([install_ets/0]).
 -export([install_mnesia/0]).
+-export([install_mnesia/1]).
 -export([notify_session_reestablished/1]).
 -export([remove_session_cleanup/1]).
 -export([schedule_resource_cleanup/1]).
@@ -11,7 +12,6 @@
 -export([subscribe_edge/3]).
 -export([subscriptions_for_session_id/1]).
 -export([unsubscribe_edge/3]).
--export([do_install_mnesia/1]).
 
 -include_lib("stdlib/include/ms_transform.hrl").
 
@@ -128,16 +128,15 @@ install_mnesia() ->
     case ExpectedNodes == Nodes of
         true ->
             global:trans({mnesia_create_lock, node()},
-                         fun() -> lager:error("~p got lock", [node()]), do_install_mnesia(Nodes) end,
-                         Nodes,
-                         infinity);
+                         fun() -> lager:error("~p got lock", [node()]), install_mnesia(Nodes) end,
+                         Nodes);
         false ->
             lager:error("Waiting for cluster to be fully formed before becoming operational"),
             timer:sleep(10000),
             install_mnesia()
     end.
 
-do_install_mnesia(Nodes) ->
+install_mnesia(Nodes) ->
     mnesia:create_schema(Nodes),
     rpc:multicall(Nodes, application, start, [mnesia]),
     ok = create_table(ums_state,
