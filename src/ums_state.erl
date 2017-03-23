@@ -122,7 +122,7 @@ remove_subscriptions_by_session_id(SessionId) ->
     mnesia:transaction(RemoveBySessionId).
 
 install_mnesia() ->
-    ExpectedNodes = lists:usort(werld:expected_nodes()),
+    ExpectedNodes = lists:usort(werld:expected_nodes() -- [node()]),
     Nodes = lists:usort(nodes()),
     case ExpectedNodes == Nodes of
         true ->
