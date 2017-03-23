@@ -126,7 +126,10 @@ install_mnesia() ->
     Nodes = lists:usort(nodes()),
     case ExpectedNodes == Nodes of
         true ->
-            do_install_mnesia(Nodes);
+            global:trans({mnesia_create_lock, node()},
+                         fun() -> do_install_mnesia(Nodes) end,
+                         Nodes,
+                         infinity);
         false ->
             lager:error("Waiting for cluster to be fully formed before becoming operational"),
             timer:sleep(10000),
