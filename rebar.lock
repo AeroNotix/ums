@@ -16,7 +16,7 @@
   1},
  {<<"werld">>,
   {git,"https://github.com/AeroNotix/werld.git",
-       {ref,"c08606ecb664649fc303d98cb053f941dfb6e802"}},
+       {ref,"3d157a4e9b52a9bd7dfa2bfc5c878bed81d041b9"}},
   0},
  {<<"uuid">>,
   {git,"https://github.com/okeuday/uuid.git",
