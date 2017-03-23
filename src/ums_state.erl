@@ -140,8 +140,6 @@ install_mnesia() ->
 install_mnesia(Nodes) ->
     lager:error("Creating schema: ~p", [mnesia:create_schema(Nodes)]),
     rpc:multicall(Nodes, application, start, [mnesia]),
-    %% debug locks
-    timer:sleep(10000),
     ok = create_table(ums_state,
                       [{attributes, record_info(fields, umss_v1)},
                        {record_name, umss_v1},
