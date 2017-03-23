@@ -15,5 +15,8 @@
           uuid,
           inets,
           werld]},
+     {included_applications, [
+                              mnesia
+                              ]},
      {mod,{ums_app,[]}},
      {env, []}]}.
