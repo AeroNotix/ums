@@ -16,10 +16,7 @@ start_link() ->
 
 
 init([]) ->
-
     SupFlags = #{strategy => one_for_one,
                  intensity => 1,
                  period => 5},
-    {ok, {SupFlags, [
-                     ?CHILD(ums_cluster, worker)
-                    ]}}.
+    {ok, {SupFlags, [ ]}}.
