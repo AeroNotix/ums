@@ -13,15 +13,16 @@ export
 
 
 docker-build:
-	docker build \
-	--squash \
-	-t gcr.io/${GCLOUD_PROJECT}/${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG} .
+	@docker build \
+			--squash \
+			-t gcr.io/${GCLOUD_PROJECT}/${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG} .
 
 docker-push:
 	@gcloud docker -- push gcr.io/${GCLOUD_PROJECT}/${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}
 
 deploy:
-	envsubst < "kubernetes/deployment.yml" | kubectl apply -f -
+	@envsubst < "kubernetes/deployment.yml" | kubectl apply -f -
+	@envsubst < "kubernetes/service.yml" | kubectl apply -f -
 
 deps:
 	$(REBAR) deps
