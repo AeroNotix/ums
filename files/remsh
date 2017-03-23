@@ -1,0 +1,3 @@
+#!/bin/bash
+
+TERM=xterm erl -remsh ums@$NODE -name foo@$NODE -setcookie ums-$GIT_REV_HASH
