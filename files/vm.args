@@ -2,7 +2,7 @@
 -name ums@${NODE}
 
 ## Cookie for distributed erlang
--setcookie ums
+-setcookie ums-${GIT_REV_HASH}
 
 ## Enable kernel poll and a few async threads
 +K true
