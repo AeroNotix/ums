@@ -3,7 +3,7 @@
 -export([edges_subscribed/1]).
 -export([find_session_cleanup/1]).
 -export([install_ets/0]).
--export([install_mnesia/1]).
+-export([install_mnesia/0]).
 -export([notify_session_reestablished/1]).
 -export([remove_session_cleanup/1]).
 -export([schedule_resource_cleanup/1]).
@@ -121,7 +121,7 @@ remove_subscriptions_by_session_id(SessionId) ->
         end,
     mnesia:transaction(RemoveBySessionId).
 
-install_mnesia(Nodes) ->
+install_mnesia() ->
     ExpectedNodes = lists:usort(werld:expected_nodes()),
     Nodes = lists:usort(nodes()),
     case ExpectedNodes == Nodes of
@@ -130,7 +130,7 @@ install_mnesia(Nodes) ->
         false ->
             lager:error("Waiting for cluster to be fully formed before becoming operational"),
             timer:sleep(10000),
-            install_mnesia(Nodes)
+            install_mnesia()
     end.
 
 do_install_mnesia(Nodes) ->

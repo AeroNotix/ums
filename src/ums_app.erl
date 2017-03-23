@@ -15,7 +15,7 @@ start_cowboy() ->
     ok = ums_cowboy:start_listener().
 
 start_mnesia() ->
-    ok = ums_state:install_mnesia([node()|werld:expected_nodes()]),
+    ok = ums_state:install_mnesia(),
     mnesia:wait_for_tables([ums_state], 60000).
 
 stop(_State) ->
