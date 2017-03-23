@@ -141,10 +141,10 @@ do_install_mnesia(Nodes) ->
     mnesia:create_schema(Nodes),
 
     ok = create_table(ums_state,
-                    [{attributes, record_info(fields, umss_v1)},
-                     {record_name, umss_v1},
-                     {ram_copies, Nodes},
-                     {type, bag}]).
+                      [{attributes, record_info(fields, umss_v1)},
+                       {record_name, umss_v1},
+                       {ram_copies, Nodes},
+                       {type, bag}]).
 
 %% Stolen from https://github.com/ostinelli/syn/blob/master/src/syn_backbone.erl
 create_table(TableName, Options) ->
