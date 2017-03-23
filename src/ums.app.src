@@ -12,7 +12,6 @@
           ranch,
           ssl,
           stdlib,
-          mnesia,
           uuid,
           inets,
           werld]},
