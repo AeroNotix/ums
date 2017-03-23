@@ -15,6 +15,11 @@ spec:
           ports:
             - containerPort: 4369
             - containerPort: 10000
+            - containerPort: 10001
+            - containerPort: 10002
+            - containerPort: 10003
+            - containerPort: 10004
+            - containerPort: 10005
           env:
             - name: NODE
               valueFrom:
