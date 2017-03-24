@@ -150,7 +150,7 @@ install_mnesia(Nodes) ->
         true ->
             case ask_remote_nodes_to_change_config(Nodes, node()) of
                 true ->
-                    ok;
+                    ok = mnesia:start();
                 false ->
                     timer:sleep(10000),
                     lager:error("Waiting before trying to join mnesia cluster again"),
