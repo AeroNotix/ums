@@ -130,11 +130,11 @@ install_mnesia() ->
     Nodes = lists:usort(nodes()),
     case ExpectedNodes == Nodes of
         true ->
-            lager:error("Attempting to lock"),
+            lager:debug("Attempting to lock"),
             InstallOnNodes = lists:filter(fun node_is_alive/1, [node() | Nodes]),
             global:trans({mnesia_create_lock, node()},
                          fun() ->
-                                 lager:error("~p got lock", [node()]),
+                                 lager:debug("~p got lock", [node()]),
                                  install_mnesia(InstallOnNodes)
                          end,
                          Nodes);
@@ -157,7 +157,7 @@ install_mnesia(Nodes) ->
                     install_mnesia()
             end;
         false ->
-            lager:error("Creating schema: ~p", [mnesia:create_schema(Nodes)]),
+            lager:debug("Creating schema: ~p", [mnesia:create_schema(Nodes)]),
             rpc:multicall(Nodes, application, start, [mnesia]),
             ok = create_table(ums_state,
                               [{attributes, record_info(fields, umss_v1)},
@@ -172,7 +172,7 @@ create_table(TableName, Options) ->
     %% ensure table exists
     case mnesia:create_table(TableName, Options) of
         {atomic, ok} ->
-            lager:error("~p was successfully created", [TableName]),
+            lager:debug("~p was successfully created", [TableName]),
             ok;
         {aborted, {already_exists, TableName}} ->
             %% table already exists, try to add current node as copy
@@ -181,7 +181,7 @@ create_table(TableName, Options) ->
             %% table already exists, try to add current node as copy
             add_table_copy_to_current_node(TableName);
         Other ->
-            error_logger:error_msg("Error while creating ~p: ~p", [TableName, Other]),
+            lager:debug("Error while creating ~p: ~p", [TableName, Other]),
             {error, Other}
     end.
 
@@ -193,13 +193,13 @@ add_table_copy_to_current_node(TableName) ->
     %% add copy
     case mnesia:add_table_copy(TableName, CurrentNode, ram_copies) of
         {atomic, ok} ->
-            lager:error("Copy of ~p was successfully added to current node", [TableName]),
+            lager:debug("Copy of ~p was successfully added to current node", [TableName]),
             ok;
         {aborted, {already_exists, TableName}} ->
-            lager:error("Copy of ~p is already added to current node", [TableName]),
+            lager:debug("Copy of ~p is already added to current node", [TableName]),
             ok;
         {aborted, {already_exists, TableName, CurrentNode}} ->
-            lager:error("Copy of ~p is already added to current node", [TableName]),
+            lager:debug("Copy of ~p is already added to current node", [TableName]),
             ok;
         {aborted, Reason} ->
             lager:error("Error while creating copy of ~p: ~p", [TableName, Reason]),
@@ -208,37 +208,37 @@ add_table_copy_to_current_node(TableName) ->
 
 check_remote_tables_exist(N0) ->
     Nodes = lists:usort(N0 -- [node()]),
-    lager:error("Checking tables exist on: ~p", [Nodes]),
+    lager:debug("Checking tables exist on: ~p", [Nodes]),
     {Replies, _} = rpc:multicall(Nodes, ums_state, table_exists, []),
-    lager:error("Checked tables exist on: ~p, Replies: ~p", [Nodes, Replies]),
+    lager:debug("Checked tables exist on: ~p, Replies: ~p", [Nodes, Replies]),
     lists:any(fun(X) -> X end, Replies).
 
 table_exists() ->
     Node = node(),
-    lager:error("Table exists check on ~p", [Node]),
+    lager:debug("Table exists check on ~p", [Node]),
     try
         lists:member(ums_state, mnesia:system_info(tables))
     catch
         exit:{aborted, {node_not_running, Node}} ->
-            lager:error("Table exist check - mnesia not running"),
+            lager:debug("Table exist check - mnesia not running"),
             false
     end.
 
 add_node_to_mnesia_cluster(Node) ->
-    lager:error("Adding node to mnesia cluster: ~p", [Node]),
+    lager:debug("Adding node to mnesia cluster: ~p", [Node]),
     {ok, _} = mnesia:change_config(extra_db_nodes, [Node]),
     ok.
 
 ask_remote_nodes_to_change_config(N0, ForWhom) ->
     Nodes = lists:usort(N0 -- [node()]),
     try
-        lager:error("Asking remote nodes to change config: ~p", [{Nodes, ForWhom}]),
+        lager:debug("Asking remote nodes to change config: ~p", [{Nodes, ForWhom}]),
         {Replies, _} = rpc:multicall(Nodes, ums_state, add_node_to_mnesia_cluster, [ForWhom]),
-        lager:error("Asked remote nodes to change config: ~p", [Replies]),
+        lager:debug("Asked remote nodes to change config: ~p", [Replies]),
         lists:all(fun(X) -> ok == X end, Replies)
     catch
         E:R ->
-            lager:error("Unhandled error requesting config change: ~p", [{E,R}]),
+            lager:debug("Unhandled error requesting config change: ~p", [{E,R}]),
             exit(ask_remote_nodes_to_change_config)
     end.
 
