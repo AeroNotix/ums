@@ -227,6 +227,7 @@ table_exists() ->
 add_node_to_mnesia_cluster(Node) ->
     lager:debug("Adding node to mnesia cluster: ~p", [Node]),
     {ok, _} = mnesia:change_config(extra_db_nodes, [Node]),
+    {atomic, ok} = mnesia:add_table_copy(ums_state, Node, ram_copies),
     ok.
 
 ask_remote_nodes_to_change_config(N0, ForWhom) ->
