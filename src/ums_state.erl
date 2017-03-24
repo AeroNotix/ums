@@ -145,11 +145,11 @@ install_mnesia() ->
     end.
 
 install_mnesia(Nodes) ->
-    lager:error("Creating schema: ~p", [mnesia:create_schema(Nodes)]),
     case check_remote_tables_exist(Nodes) of
         true ->
             case ask_remote_nodes_to_change_config(Nodes, node()) of
                 true ->
+                    lager:error("Creating schema after cluster join dance: ~p", [mnesia:create_schema(Nodes)]),
                     ok = mnesia:start();
                 false ->
                     timer:sleep(10000),
@@ -157,6 +157,7 @@ install_mnesia(Nodes) ->
                     install_mnesia()
             end;
         false ->
+            lager:error("Creating schema: ~p", [mnesia:create_schema(Nodes)]),
             rpc:multicall(Nodes, application, start, [mnesia]),
             ok = create_table(ums_state,
                               [{attributes, record_info(fields, umss_v1)},
