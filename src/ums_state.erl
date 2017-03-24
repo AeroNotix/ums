@@ -202,22 +202,28 @@ add_table_copy_to_current_node(TableName) ->
     end.
 
 check_remote_tables_exist(Nodes) ->
+    lager:error("Checking tables exist on: ~p", [Nodes]),
     {Replies, _} = rpc:multicall(Nodes, ums_state, table_exists, []),
+    lager:error("Checked tables exist on: ~p, Replies: ~p", [Nodes, Replies]),
     lists:any(fun(X) -> X end, Replies).
 
 table_exists() ->
     Node = node(),
+    lager:error("Table exists check on ~p", [Node]),
     try
         lists:member(ums_state, mnesia:system_info(tables))
     catch
         exit:{aborted, {node_not_running, Node}} ->
+            lager:error("Table exist check - mnesia not running"),
             false
     end.
 
 add_node_to_mnesia_cluster(Node) ->
+    lager:error("Adding node to mnesia cluster: ~p", [Node]),
     {ok, _} = mnesia:change_config(extra_db_nodes, [Node]),
     ok.
 
 ask_remote_nodes_to_change_config(Nodes, ForWhom) ->
+    lager:error("Asking remote nodes to change config: ~p", [{Nodes, ForWhom}]),
     {Replies, _} = rpc:multicall(Nodes -- [node()], ums_state, add_node_to_mnesia_cluster, [ForWhom]),
     lists:all(fun(X) -> ok == X end, Replies).
