@@ -14,7 +14,7 @@
 -export([unsubscribe_edge/3]).
 -export([table_exists/0]).
 -export([add_node_to_mnesia_cluster/1]).
-
+-export([node_is_alive/1]).
 
 -include_lib("stdlib/include/ms_transform.hrl").
 
@@ -131,8 +131,12 @@ install_mnesia() ->
     case ExpectedNodes == Nodes of
         true ->
             lager:error("Attempting to lock"),
+            InstallOnNodes = lists:filter(fun node_is_alive/1, [node() | Nodes]),
             global:trans({mnesia_create_lock, node()},
-                         fun() -> lager:error("~p got lock", [node()]), install_mnesia([node() | Nodes]) end,
+                         fun() ->
+                                 lager:error("~p got lock", [node()]),
+                                 install_mnesia(InstallOnNodes)
+                         end,
                          Nodes);
         false ->
             lager:error("Waiting for cluster to be fully formed before becoming operational"),
@@ -201,7 +205,8 @@ add_table_copy_to_current_node(TableName) ->
             {error, Reason}
     end.
 
-check_remote_tables_exist(Nodes) ->
+check_remote_tables_exist(N0) ->
+    Nodes = lists:usort(N0 -- [node()]),
     lager:error("Checking tables exist on: ~p", [Nodes]),
     {Replies, _} = rpc:multicall(Nodes, ums_state, table_exists, []),
     lager:error("Checked tables exist on: ~p, Replies: ~p", [Nodes, Replies]),
@@ -223,7 +228,11 @@ add_node_to_mnesia_cluster(Node) ->
     {ok, _} = mnesia:change_config(extra_db_nodes, [Node]),
     ok.
 
-ask_remote_nodes_to_change_config(Nodes, ForWhom) ->
+ask_remote_nodes_to_change_config(N0, ForWhom) ->
+    Nodes = lists:usort(N0 -- [node()]),
     lager:error("Asking remote nodes to change config: ~p", [{Nodes, ForWhom}]),
     {Replies, _} = rpc:multicall(Nodes -- [node()], ums_state, add_node_to_mnesia_cluster, [ForWhom]),
     lists:all(fun(X) -> ok == X end, Replies).
+
+node_is_alive(Node) ->
+    net_adm:ping(Node) /= pang.
