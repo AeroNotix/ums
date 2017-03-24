@@ -154,7 +154,7 @@ install_mnesia(Nodes) ->
                 false ->
                     timer:sleep(10000),
                     lager:error("Waiting before trying to join mnesia cluster again"),
-                    install_mnesia(Nodes)
+                    install_mnesia()
             end;
         false ->
             rpc:multicall(Nodes, application, start, [mnesia]),
@@ -230,9 +230,16 @@ add_node_to_mnesia_cluster(Node) ->
 
 ask_remote_nodes_to_change_config(N0, ForWhom) ->
     Nodes = lists:usort(N0 -- [node()]),
-    lager:error("Asking remote nodes to change config: ~p", [{Nodes, ForWhom}]),
-    {Replies, _} = rpc:multicall(Nodes -- [node()], ums_state, add_node_to_mnesia_cluster, [ForWhom]),
-    lists:all(fun(X) -> ok == X end, Replies).
+    try
+        lager:error("Asking remote nodes to change config: ~p", [{Nodes, ForWhom}]),
+        {Replies, _} = rpc:multicall(Nodes, ums_state, add_node_to_mnesia_cluster, [ForWhom]),
+        lager:error("Asked remote nodes to change config: ~p", [Replies]),
+        lists:all(fun(X) -> ok == X end, Replies)
+    catch
+        E:R ->
+            lager:error("Unhandled error requesting config change: ~p", [{E,R}]),
+            exit(ask_remote_nodes_to_change_config)
+    end.
 
 node_is_alive(Node) ->
     net_adm:ping(Node) /= pang.
