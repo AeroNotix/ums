@@ -126,7 +126,7 @@ remove_subscriptions_by_session_id(SessionId) ->
     mnesia:transaction(RemoveBySessionId).
 
 install_mnesia() ->
-    ExpectedNodes = lists:usort(werld:expected_nodes() -- [node()]),
+    ExpectedNodes = expected_nodes(),
     Nodes = lists:usort(nodes()),
     case ExpectedNodes == Nodes of
         true ->
@@ -245,3 +245,11 @@ ask_remote_nodes_to_change_config(N0, ForWhom) ->
 
 node_is_alive(Node) ->
     net_adm:ping(Node) /= pang.
+
+expected_nodes() ->
+    case application:get_env(ums, clustered, false) of
+        true ->
+            lists:usort(werld:expected_nodes() -- [node()]);
+        false ->
+            []
+    end.

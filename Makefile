@@ -28,10 +28,10 @@ deploy:
 	@envsubst < "kubernetes/service.yml" | kubectl apply -f -
 
 deps:
-	$(REBAR) deps
+	$(REBAR) as dev deps
 
 compile:
-	$(REBAR) compile
+	$(REBAR) as dev compile
 
 edts-console:
 	@$(REBAR) shell --sname ums_console --config file/sys.config
@@ -43,7 +43,7 @@ python-deps: ${PIP}
 	${PIP} install -r requirements.txt
 
 release:
-	$(REBAR) release
+	$(REBAR) as dev release
 
 run:
 	./_build/default/rel/ums/bin/ums console
