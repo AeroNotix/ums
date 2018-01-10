@@ -31,8 +31,9 @@ class UMSWebsocketClientTests(unittest.TestCase):
         payload.update(extend)
         payload = json.dumps(payload)
         ws.send_binary(payload)
+        msg = ws.recv()
         self.assertEquals(
-            json.loads((ws.recv()))["status"],
+            json.loads(msg)["status"],
             "ok"
         )
 

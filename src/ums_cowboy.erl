@@ -3,14 +3,11 @@
 %% Everything is exported and everything is a function because we can
 %% mock, properly.
 -export([routes/0]).
--export([middlewares/0]).
 -export([max_keepalive/0]).
 -export([request_timeout/0]).
 -export([env/0]).
 -export([protoopts/0]).
 -export([transopts/0]).
--export([acceptor_count/0]).
--export([listener_name/0]).
 -export([start_listener/0]).
 -export([read_json_body/1]).
 
@@ -23,12 +20,9 @@ routes() ->
             false ->
                 []
         end,
-    [{<<"/route">>, ums_rest_route, []},
+    [{<<"/health">>, ums_rest_health, []},
+     {<<"/route">>, ums_rest_route, []},
      {<<"/subscribe">>, ums_connection, []}|DebugEndpoint].
-
-middlewares() ->
-    [cowboy_router,
-     cowboy_handler].
 
 max_keepalive() ->
     application:get_env(ums, cowboy_max_keepalive, 150).
@@ -37,28 +31,20 @@ request_timeout() ->
     application:get_env(ums, cowboy_max_request_timeout, 60000).
 
 env() ->
-    [{dispatch, cowboy_router:compile([{'_', routes()}])}].
+    #{dispatch => cowboy_router:compile([{'_', routes()}])}.
 
 protoopts() ->
-    [{env, env()},
-     {middlewares, middlewares()},
-     {max_keepalive, max_keepalive()},
-     {timeout, request_timeout()}].
+    #{env => env(),
+      max_keepalive => max_keepalive(),
+      timeout => request_timeout()}.
 
 transopts() ->
     [{port, application:get_env(ums, client_websocket_port, 5564)},
      {backlog, 1000}].
 
-acceptor_count() ->
-    application:get_env(ums, cowboy_acceptors, 200).
-
-listener_name() ->
-    ums_websocket_listener.
-
 start_listener() ->
-    {ok, _} = cowboy:start_http(
-                listener_name(),
-                acceptor_count(),
+    {ok, _} = cowboy:start_clear(
+                http,
                 transopts(),
                 protoopts()
                ),
@@ -68,7 +54,7 @@ read_body(Req) ->
     read_body(Req, <<>>).
 
 read_body(Req0, Buf) ->
-    case cowboy_req:body(Req0) of
+    case cowboy_req:read_body(Req0) of
         {ok, Data, Req1} ->
             Body = <<Buf/binary, Data/binary>>,
             {ok, Body, Req1};

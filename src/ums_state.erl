@@ -97,7 +97,7 @@ notify_session_reestablished(Sid) ->
             Pid ! {session_reestablished, Sid},
             {ok, subscriptions_for_session_id(Sid)};
         {error, not_found} = E ->
-            E
+            {ok, []}
     end.
 
 find_session_cleanup(Sid) ->
