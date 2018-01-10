@@ -27,7 +27,7 @@ init(R0, _) ->
                                  session_id=Sid}}.
 
 websocket_init(#s_v1{session_reestablished=true, session_id=Sid}=S) ->
-    {ok, Subs} = ums_state:notify_session_reestablished(Sid),
+    {ok, Subs} = ums_session_manager:notify_session_reestablished(Sid),
     lager:debug("Reestablishing session: ~p", [Subs]),
     self() ! inform_client_of_known_subscriptions,
     {ok, S#s_v1{session_id=Sid, subscriptions=Subs}};
