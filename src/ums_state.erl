@@ -9,12 +9,23 @@
 
 -include_lib("ums/include/ums.hrl").
 
--callback init() -> ok.
--callback edges_subscribed(Resources :: binary()) -> {ok, binary()} | {error, atom()}.
--callback subscriptions_for_session_id(SessionId :: binary()) -> {ok, binary()} | {error, atom()}.
--callback subscribe_edge(SessionId :: binary(), Edge :: binary(), Resource :: binary()) -> ok | {error, atom()}.
--callback unsubscribe_edge(SessionId :: binary(), Edge :: binary(), Resource :: binary()) -> ok | {error, atom()}.
--callback remove_subscriptions_by_session_id(SessionId :: binary()) -> ok | {error, atom()}.
+-callback init() ->
+    ok.
+
+-callback edges_subscribed(Resources :: binary()) ->
+    {ok, binary()} | {error, atom()}.
+
+-callback subscriptions_for_session_id(SessionId :: binary()) ->
+    {ok, binary()} | {error, atom()}.
+
+-callback subscribe_edge(SessionId :: binary(), Edge :: binary(), Resource :: binary()) ->
+    ok | {error, atom()}.
+
+-callback unsubscribe_edge(SessionId :: binary(), Edge :: binary(), Resource :: binary()) ->
+    ok | {error, atom()}.
+
+-callback remove_subscriptions_by_session_id(SessionId :: binary()) ->
+    ok | {error, atom()}.
 
 init() ->
     ?state_backend:init().
