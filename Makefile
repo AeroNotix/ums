@@ -1,4 +1,4 @@
-PYTHON := ./.venv/bin/python
+PYTHON := ./.venv/bin/python2
 PIP := ./.venv/bin/pip
 NOSE := ./.venv/bin/nosetests
 REBAR := ./rebar3
@@ -7,7 +7,6 @@ BUMPERL = utils/bumperl
 BUILD_DIR = ./_build/*
 ERL_DEPS_DIR = $(PWD)/$(BUILD_DIR)/lib
 REL_DIR=./_build/dev/rel/ums
-GCLOUD_PROJECT?=
 DOCKER_IMAGE_NAME=ums
 DOCKER_IMAGE_TAG=$(shell git rev-parse --short HEAD)
 export
@@ -18,16 +17,7 @@ docker-build-dependencies:
 	@docker build -t ums-dependencies -f Dockerfile.dependencies .
 
 docker-build:
-	@docker build \
-			--squash \
-			-t gcr.io/${GCLOUD_PROJECT}/${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG} .
-
-docker-push:
-	@gcloud docker -- push gcr.io/${GCLOUD_PROJECT}/${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}
-
-deploy:
-	@envsubst < "kubernetes/deployment.yml" | kubectl apply -f -
-	@envsubst < "kubernetes/service.yml" | kubectl apply -f -
+	@docker build -t ${DOCKER_IMAGE_NAME}-${DOCKER_IMAGE_TAG} .
 
 deps:
 	$(REBAR) as dev deps
