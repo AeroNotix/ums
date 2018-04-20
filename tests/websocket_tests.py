@@ -31,7 +31,7 @@ class UMSWebsocketClientTests(unittest.TestCase):
         payload.update(extend)
         payload = json.dumps(payload)
         ws.send_binary(payload)
-        msg = ws.recv()
+        msg = ws.recv().decode('ascii')
         self.assertEquals(
             json.loads(msg)["status"],
             "ok"
@@ -71,8 +71,9 @@ class UMSWebsocketClientTests(unittest.TestCase):
                 "edge": UMS_DEBUG_ENDPOINT
             }]
         }
+        msg = ws.recv().decode('ascii')
         self.assertEquals(
-            json.loads(ws.recv()),
+            json.loads(msg),
             expected_reply
         )
 
@@ -88,7 +89,7 @@ class UMSWebsocketClientTests(unittest.TestCase):
             }
             resp = requests.post(UMS_DEBUG_ENDPOINT, json=body)
             self.assertEquals(resp.status_code, 200)
-            msg = ws.recv()
+            msg = ws.recv().decode('ascii')
             self.assertEquals(
                 json.loads(msg),
                 {
