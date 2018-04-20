@@ -26,7 +26,7 @@ send_message_to_all_websockets(JSON) ->
     lager:debug("Sending debug message to websocket: ~p", [JSON]),
     SendToCowboyWebSocket =
         fun(Pid) ->
-                case process_info(Pid, current_function) == {current_function, {cowboy_websocket,handler_loop,3}} of
+                case process_info(Pid, current_function) == {current_function, {cowboy_websocket,loop,3}} of
                     true ->
                         Pid ! {debug_message, maps:remove(<<"resources">>, JSON)};
                     false ->
