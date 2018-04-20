@@ -1,0 +1,7 @@
+FROM erlang:20
+
+COPY . /usr/app
+
+WORKDIR /usr/app
+
+RUN ./rebar3 get-deps

@@ -7,9 +7,17 @@ BUMPERL = utils/bumperl
 BUILD_DIR = ./_build/*
 ERL_DEPS_DIR = $(PWD)/$(BUILD_DIR)/lib
 REL_DIR=./_build/dev/rel/ums
+DOCKER_IMAGE_NAME=ums
+DOCKER_IMAGE_TAG=$(shell git rev-parse --short HEAD)
 export
 
 all: release test
+
+docker-build-dependencies:
+	@docker build -t ums-dependencies -f Dockerfile.dependencies .
+
+docker-build:
+	@docker build -t ${DOCKER_IMAGE_NAME}-${DOCKER_IMAGE_TAG} .
 
 deps:
 	$(REBAR) as dev deps
@@ -71,3 +79,6 @@ endef
 
 ct: release-stop
 	$(call make-ct-suite)
+
+docker-console:
+	/usr/app/_build/default/rel/ums/bin/ums foreground
