@@ -56,7 +56,7 @@ release-stop:
 
 test: python-tests ct
 
-python-tests: python-deps release-start
+python-tests:
 	${NOSE} tests
 
 $(BUMPERL):
