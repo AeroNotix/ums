@@ -4,7 +4,6 @@ from contextlib import contextmanager
 import websocket
 import unittest
 
-
 RESOURCE = "00000-00000-00000-00000-00000"
 UMS_DEBUG_ENDPOINT = "http://localhost:5564/debug"
 UMS_SESSION_ID_HEADER = 'x-ums-session-id'
