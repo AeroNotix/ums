@@ -1,0 +1,29 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: ums
+spec:
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: ums
+    spec:
+      containers:
+        - name: ums
+          image: gcr.io/$GCLOUD_PROJECT/$DOCKER_IMAGE_NAME:$DOCKER_IMAGE_TAG
+          ports:
+            - containerPort: 4369
+            - containerPort: 10000
+            - containerPort: 10001
+            - containerPort: 10002
+            - containerPort: 10003
+            - containerPort: 10004
+            - containerPort: 10005
+          env:
+            - name: GIT_REV_HASH
+              value: $DOCKER_IMAGE_TAG
+            - name: NODE
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
