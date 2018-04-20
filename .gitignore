@@ -40,3 +40,5 @@ ct_log_cache
 index.html
 jquery*
 variables*
+skaffold
+suite.log.latest.html

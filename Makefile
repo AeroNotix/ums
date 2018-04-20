@@ -21,7 +21,7 @@ edts-console:
 	@$(REBAR) shell --sname ums_console --config file/sys.config
 
 ${PIP}:
-	virtualenv -p "$$(which python3)" .venv
+	virtualenv -p "$$(which python)" .venv
 
 python-deps: ${PIP}
 	@${PIP} install -q -r requirements.txt
