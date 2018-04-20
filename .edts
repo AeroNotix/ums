@@ -1,3 +1,4 @@
 :name "ums_console"
 :lib-dirs '("_build/default/lib")
 :start-command "make edts-console"
+:node-name "ums_console"
