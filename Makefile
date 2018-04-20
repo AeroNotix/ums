@@ -26,6 +26,9 @@ ${PIP}:
 python-deps: ${PIP}
 	@${PIP} install -q -r requirements.txt
 
+python-tests:
+	${NOSE} tests
+
 release:
 	@$(REBAR) as dev release
 
@@ -46,10 +49,10 @@ release-stop:
 	@-pkill -15 -f "$$(pwd)/$(REL_DIR)/erts-5.10.1/bin/run_erl" 2>&1 > /dev/null || true
 	@-while ps -ef | grep "/_rel -pro[g]name ums" > /dev/null; do sleep 1; done
 
-test: python-tests ct
+skaffold:
+	curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-linux-amd64 && chmod +x skaffold
 
-python-tests:
-	${NOSE} tests
+test: python-tests ct
 
 $(BUMPERL):
 	rm -rf /tmp/bumperl/
