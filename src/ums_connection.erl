@@ -52,6 +52,7 @@ websocket_info(inform_client_of_known_subscriptions, #s_v1{session_id=Sid}=State
     lager:debug("Informing client of known sessions: ~p", [{Sid, Subscriptions}]),
     {reply, {binary, subscriptions_to_json(Subscriptions)}, State};
 websocket_info({debug_message, JSON}, State) ->
+    lager:debug("Debug message: ~p", [JSON]),
     {reply, {binary, jsx:encode(JSON)}, State}.
 
 
