@@ -1,0 +1,1 @@
+-define(state_backend, ums_state_mnesia).

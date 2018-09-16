@@ -12,6 +12,12 @@
 -export([remove_subscriptions_by_session_id/1]).
 -export([table_exists/0]).
 
+-record(umss_v1, {
+          session_id,
+          resource,
+          edge_server
+         }).
+
 -behaviour(ums_state).
 
 init() ->
