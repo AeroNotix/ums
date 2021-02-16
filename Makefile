@@ -40,6 +40,9 @@ python-tests: ${PIP} python-deps
 release:
 	@$(REBAR) as dev release
 
+release-k8:
+	@$(REBAR) as k8 release
+
 release-console:
 	@${REL_DIR}/bin/ums console
 
