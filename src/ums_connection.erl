@@ -57,7 +57,7 @@ websocket_info({debug_message, JSON}, State) ->
 
 
 websocket_terminate(_Reason, #s_v1{session_id=Sid}) ->
-    ums_state:schedule_resource_cleanup(Sid).
+    lager:debug("Resource cleanup: ~p", [ums_state:schedule_resource_cleanup(Sid)]).
 
 status(ok) ->
     <<"{\"status\": \"ok\"}">>.
