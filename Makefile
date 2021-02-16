@@ -11,13 +11,13 @@ DOCKER_IMAGE_NAME=ums
 DOCKER_IMAGE_TAG=$(shell git rev-parse --short HEAD)
 export
 
-all: release test
+all: release
 
 docker-build-dependencies:
 	@docker build -t ums-dependencies -f Dockerfile.dependencies .
 
-docker-build:
-	@docker build -t ${DOCKER_IMAGE_NAME}-${DOCKER_IMAGE_TAG} .
+docker-build: docker-build-dependencies
+	@docker build -t ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG} .
 
 deps:
 	$(REBAR) as dev deps
@@ -34,7 +34,7 @@ ${PIP}:
 python-deps: ${PIP}
 	@${PIP} install -q -r requirements.txt
 
-python-tests:
+python-tests: ${PIP} python-deps
 	${NOSE} tests
 
 release:
