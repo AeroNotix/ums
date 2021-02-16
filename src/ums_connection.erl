@@ -60,7 +60,9 @@ websocket_terminate(_Reason, #s_v1{session_id=Sid}) ->
     lager:debug("Resource cleanup: ~p", [ums_state:schedule_resource_cleanup(Sid)]).
 
 status(ok) ->
-    <<"{\"status\": \"ok\"}">>.
+    <<"{\"status\": \"ok\"}">>;
+status(_) ->
+    <<"{\"status\": \"unknown\"}">>.
 
 websocket_reply_status(ok, Op, S, Edge, Resource) ->
     {reply, {binary, status(ok)}, next_state(Op, S, Edge, Resource)}.
