@@ -14,10 +14,10 @@ export
 all: release
 
 docker-build-dependencies:
-	@docker build -t ums-dependencies -f Dockerfile.dependencies .
+	@docker build --network=host -t ums-dependencies -f Dockerfile.dependencies .
 
 docker-build: docker-build-dependencies
-	@docker build -t ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG} .
+	@docker build --network=host -t ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG} .
 
 deps:
 	$(REBAR) as dev deps
