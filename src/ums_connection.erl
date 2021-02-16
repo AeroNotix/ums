@@ -64,8 +64,9 @@ status(ok) ->
 status(_) ->
     <<"{\"status\": \"unknown\"}">>.
 
-websocket_reply_status(ok, Op, S, Edge, Resource) ->
-    {reply, {binary, status(ok)}, next_state(Op, S, Edge, Resource)}.
+
+websocket_reply_status(Status, Op, S, Edge, Resource) ->
+    {reply, {binary, status(Status)}, next_state(Op, S, Edge, Resource)}.
 
 next_state(<<"subscribe">>, S=#s_v1{subscriptions=Subs}, Edge, Resource) ->
     S#s_v1{subscriptions=lists:usort([{Resource, Edge}|Subs])};
